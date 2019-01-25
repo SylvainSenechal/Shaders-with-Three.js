@@ -135,9 +135,10 @@ function loop(){
 	//mousePicker();
 	//sea.mesh.geometry.dispose();
 
+	// renderer.render(scene, camera);
 	renderer.render(scene, camera, target)
-	renderer.render(scene, camera, targetOriginal)
-	composer.render()
+	renderer.render(postScene, postCamera)
+	// composer.render()
 }
 
 function mousePicker(){
@@ -231,34 +232,44 @@ function createScene(){
 	renderer.setSize(width, height);
 	renderer.shadowMap.enabled = true;
 
-	// DEBUT DEPTH
-	target = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight );
-	target.depthTexture = new THREE.DepthTexture();
-
-	targetOriginal = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight );
-	// FIN DEPTH
-
 	composer = new THREE.EffectComposer(renderer)
 	composer.addPass(new THREE.RenderPass(scene, camera))
 
+	target = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight );
+	// target.texture.format = THREE.RGBFormat;
+	// target.texture.minFilter = THREE.NearestFilter;
+	// target.texture.magFilter = THREE.NearestFilter;
+	// target.texture.generateMipmaps = false;
+	// target.stencilBuffer = false;
+	// target.depthBuffer = true;
+	target.depthTexture = new THREE.DepthTexture();
+	// target.depthTexture.type = THREE.UnsignedShortType;
 
-	pass1 = new THREE.ShaderPass( THREE.GaussianHorizontalBlur )
-	pass1.uniforms.u_resolution.value.x = renderer.domElement.width
-	pass1.uniforms.u_resolution.value.y = renderer.domElement.height
-	composer.addPass(pass1)
-	pass2 = new THREE.ShaderPass( THREE.GaussianVerticalBlur )
-	// pass2.renderToScreen = true
-	pass2.uniforms.u_resolution.value.x = renderer.domElement.width
-	pass2.uniforms.u_resolution.value.y = renderer.domElement.height
-	composer.addPass(pass2)
+	pass = new THREE.ShaderPass( THREE.blurShader )
+	pass.renderToScreen = true
+	pass.uniforms.u_resolution.value.x = renderer.domElement.width
+	pass.uniforms.u_resolution.value.y = renderer.domElement.height
+	pass.uniforms.tDepth.value = target.depthTexture
+	composer.addPass(pass)
 
-	pass3 = new THREE.ShaderPass( THREE.DepthOfField )
-	pass3.renderToScreen = true
-	pass3.uniforms.u_resolution.value.x = renderer.domElement.width
-	pass3.uniforms.u_resolution.value.y = renderer.domElement.height
-	pass3.uniforms.tDepth.value = target.depthTexture
-	pass3.uniforms.tOriginal.value = targetOriginal.texture
-	composer.addPass(pass3)
+
+
+	postCamera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+	var postMaterial = new THREE.ShaderMaterial( {
+		vertexShader: THREE.blurShader.vertexShader ,
+		fragmentShader: THREE.blurShader.fragmentShader,
+		uniforms: {
+			cameraNear: { value: camera.near },
+			cameraFar: { value: camera.far },
+			tDiffuse: { value: target.texture },
+			tDepth: { value: target.depthTexture }
+		}
+	} );
+	var postPlane = new THREE.PlaneBufferGeometry( 2, 2 );
+	var postQuad = new THREE.Mesh( postPlane, postMaterial );
+	postScene = new THREE.Scene();
+	postScene.add( postQuad );
+
 
 
 	container = document.getElementById('jeu'); // REMPLACER PAR JQUERY
@@ -266,7 +277,6 @@ function createScene(){
 
 	window.addEventListener('resize', resize, false);
 }
-var target, targetOriginal, composerDepth, postScene, postCamera
 
 var hemisphereLight, shadowLight;
 function createLights(){
