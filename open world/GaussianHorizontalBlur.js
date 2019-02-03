@@ -24,12 +24,30 @@ THREE.GaussianHorizontalBlur = {
 			color += texture2D(tDiffuse, pixel + vec2(-3.0*offset, 0.0) / u_resolution.xy ) * 0.090506;
 			color += texture2D(tDiffuse, pixel + vec2(-2.0*offset, 0.0) / u_resolution.xy ) * 0.105726;
 			color += texture2D(tDiffuse, pixel + vec2(-1.0*offset, 0.0) / u_resolution.xy ) * 0.116061;
-			color += texture2D(tDiffuse, pixel + vec2( 0.0*offset, 0.0) / u_resolution.xy ) * 0.119726;
-			color += texture2D(tDiffuse, pixel + vec2( 1.0*offset, 0.0) / u_resolution.xy ) * 0.116061;
-			color += texture2D(tDiffuse, pixel + vec2( 2.0*offset, 0.0) / u_resolution.xy ) * 0.105726;
-			color += texture2D(tDiffuse, pixel + vec2( 3.0*offset, 0.0) / u_resolution.xy ) * 0.090506;
-			color += texture2D(tDiffuse, pixel + vec2( 4.0*offset, 0.0) / u_resolution.xy ) * 0.072806;
-			color += texture2D(tDiffuse, pixel + vec2( 5.0*offset, 0.0) / u_resolution.xy ) * 0.055037;
+			color += texture2D(tDiffuse, pixel + vec2(0.0*offset, 0.0) / u_resolution.xy ) * 0.119726;
+			color += texture2D(tDiffuse, pixel + vec2(1.0*offset, 0.0) / u_resolution.xy ) * 0.116061;
+			color += texture2D(tDiffuse, pixel + vec2(2.0*offset, 0.0) / u_resolution.xy ) * 0.105726;
+			color += texture2D(tDiffuse, pixel + vec2(3.0*offset, 0.0) / u_resolution.xy ) * 0.090506;
+			color += texture2D(tDiffuse, pixel + vec2(4.0*offset, 0.0) / u_resolution.xy ) * 0.072806;
+			color += texture2D(tDiffuse, pixel + vec2(5.0*offset, 0.0) / u_resolution.xy ) * 0.055037;
+
+
+
+			// color += texture2D(tDiffuse, pixel + vec2(-7.0*offset, 0.0) / u_resolution.xy ) * 0.042704;
+			// color += texture2D(tDiffuse, pixel + vec2(-6.0*offset, 0.0) / u_resolution.xy ) * 0.051133;
+			// color += texture2D(tDiffuse, pixel + vec2(-5.0*offset, 0.0) / u_resolution.xy ) * 0.059552;
+			// color += texture2D(tDiffuse, pixel + vec2(-4.0*offset, 0.0) / u_resolution.xy ) * 0.067462;
+			// color += texture2D(tDiffuse, pixel + vec2(-3.0*offset, 0.0) / u_resolution.xy ) * 0.074333;
+			// color += texture2D(tDiffuse, pixel + vec2(-2.0*offset, 0.0) / u_resolution.xy ) * 0.079666;
+			// color += texture2D(tDiffuse, pixel + vec2(-1.0*offset, 0.0) / u_resolution.xy ) * 0.083047;
+			// color += texture2D(tDiffuse, pixel + vec2( 0.0*offset, 0.0) / u_resolution.xy ) * 0.084206;
+			// color += texture2D(tDiffuse, pixel + vec2( 1.0*offset, 0.0) / u_resolution.xy ) * 0.083047;
+			// color += texture2D(tDiffuse, pixel + vec2( 2.0*offset, 0.0) / u_resolution.xy ) * 0.079666;
+			// color += texture2D(tDiffuse, pixel + vec2( 3.0*offset, 0.0) / u_resolution.xy ) * 0.074333;
+			// color += texture2D(tDiffuse, pixel + vec2( 4.0*offset, 0.0) / u_resolution.xy ) * 0.067462;
+			// color += texture2D(tDiffuse, pixel + vec2( 5.0*offset, 0.0) / u_resolution.xy ) * 0.059552;
+			// color += texture2D(tDiffuse, pixel + vec2( 6.0*offset, 0.0) / u_resolution.xy ) * 0.051133;
+			// color += texture2D(tDiffuse, pixel + vec2( 7.0*offset, 0.0) / u_resolution.xy ) * 0.042704;
 
 			gl_FragColor = color;
 		}

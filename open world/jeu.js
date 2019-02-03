@@ -2,81 +2,7 @@
 
 ////////////////////// FIN VARIABLES
 window.addEventListener('load', init, false); // voir l'argument false ?
-THREE.blurShader = {
 
-	uniforms: {
-		"tDiffuse": { value: null },
-		"u_resolution": {type: "v2", value: new THREE.Vector2()},
-		"tDepth": {value: null},
-	},
-
-	vertexShader: [`
-		varying vec3 viewZ;
-		varying float depth;
-		varying vec3 p;
-		varying vec2 vUv;
-
-		void main() {
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-			viewZ = (modelViewMatrix * vec4(position.xyz, 1.)).xyz;
-			// depth = gl_FragCoord.z / gl_FragCoord.z;
-			p = position;
-			vUv = uv;
-    }`
-	].join( "\n" ),
-
-	fragmentShader: [`
-		uniform sampler2D tDiffuse;
-		uniform sampler2D tDepth;
-		uniform vec2 u_resolution;
-		varying vec3 viewZ;
-		varying vec3 p;
-		varying vec2 vUv;
-
-		#include <packing>
-
-		float readDepth( sampler2D depthSampler, vec2 coord ) {
-			float fragCoordZ = texture2D( depthSampler, coord ).x;
-			float viewZ = perspectiveDepthToViewZ( fragCoordZ, 1.0, 1000.0 );
-			return viewZToOrthographicDepth( viewZ, 1.0, 1000.0 );
-		}
-
-		void main(){
-
-
-		// gl_FragColor.rgb =	texture2D( tDepth, gl_FragCoord.xy/u_resolution.xy).rgb;
-
-		// float col = texture2D( tDepth, gl_FragCoord.xy/u_resolution.xy ).x;
-		// gl_FragColor.rgb = vec3(col/1.0);
-		//
-		// float z = texture2D( tDepth, gl_FragCoord.xy/u_resolution.xy ).x;
-		// float color = perspectiveDepthToViewZ( z, 1.0, 40000.0 );
-		// gl_FragColor.rgb = vec3(color);
-
-
-			// float depth = texture2D( tDepth, vUv ).x;
-			// if(depth < 0.9999){
-			//
-			// 	gl_FragColor.rgb = vec3( 1.0 );
-			// }
-			//
-			// gl_FragColor.a = 1.0;
-
-			// float depth = readDepth( tDepth, vUv );
-			// if(depth < 0.2){
-			//
-			// 	gl_FragColor.rgb = vec3( depth );
-			// }
-			// gl_FragColor.a = 1.0;
-
-			float depth = readDepth( tDepth, vUv );
-			gl_FragColor.rgb = 1.0 - vec3( depth );
-			gl_FragColor.a = 1.0;
-
-		}
-		`
-	].join( "\n" )
-};
 var composer, pass, target
 function resize(){
 	height = window.innerHeight;
@@ -179,17 +105,18 @@ document.onmousemove = function vue(e){
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
 
-	camera.rotation.order = 'YXZ'; // default is 'XYZ'
-	camera.rotateX(-e.movementY*0.2*Math.PI/180);
-	camera.rotateY(-e.movementX*0.2*Math.PI/180);
-	camera.rotation.z = 0;
+	// camera.rotation.order = 'YXZ'; // default is 'XYZ'
+	// camera.rotateX(-e.movementY*0.2*Math.PI/180);
+	// camera.rotateY(-e.movementX*0.2*Math.PI/180);
+	// camera.rotation.z = 0;
 
 	// usefull stuff ?? :
 	//cameraRotateX -= e.movementX*0.5;
 	//cameraRotateY -= e.movementY*0.5;
-
+	pass3.uniforms.u_mouse.value.x = e.x
+	pass3.uniforms.u_mouse.value.y = 1298 - e.y
 }
-
+var pass3
 var Colors = {
 	red:0xf25346,
 	white:0xd8d0d1,
@@ -206,12 +133,12 @@ function createScene(){
 
 	scene = new THREE.Scene();
 
-	scene.fog = new THREE.Fog(0xf7d9aa, 100, 40000);
+	scene.fog = new THREE.Fog(0xf7d9aa, 10000, 20000);
 
 	aspectRatio = width / height;
 	fieldOfView = 60;
 	nearPlane = 1;
-	farPlane = 40000;
+	farPlane = 20000;
 
 	camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
 
@@ -242,24 +169,32 @@ function createScene(){
 	composer.addPass(new THREE.RenderPass(scene, camera))
 
 
-	pass1 = new THREE.ShaderPass( THREE.GaussianHorizontalBlur )
-	pass1.uniforms.u_resolution.value.x = renderer.domElement.width
-	pass1.uniforms.u_resolution.value.y = renderer.domElement.height
-	composer.addPass(pass1)
-	pass2 = new THREE.ShaderPass( THREE.GaussianVerticalBlur )
-	// pass2.renderToScreen = true
-	pass2.uniforms.u_resolution.value.x = renderer.domElement.width
-	pass2.uniforms.u_resolution.value.y = renderer.domElement.height
-	composer.addPass(pass2)
+	// pass1 = new THREE.ShaderPass( THREE.GaussianHorizontalBlur )
+	// pass1.uniforms.u_resolution.value.x = renderer.domElement.width
+	// pass1.uniforms.u_resolution.value.y = renderer.domElement.height
+	// composer.addPass(pass1)
+	// pass2 = new THREE.ShaderPass( THREE.GaussianVerticalBlur )
+	// pass2.uniforms.u_resolution.value.x = renderer.domElement.width
+	// pass2.uniforms.u_resolution.value.y = renderer.domElement.height
+	// composer.addPass(pass2)
+	// pass11 = new THREE.ShaderPass( THREE.GaussianHorizontalBlur )
+	// pass11.uniforms.u_resolution.value.x = renderer.domElement.width
+	// pass11.uniforms.u_resolution.value.y = renderer.domElement.height
+	//
+	// pass3 = new THREE.ShaderPass( THREE.DepthOfField )
+	// pass3.renderToScreen = true
+	// pass3.uniforms.u_resolution.value.x = renderer.domElement.width
+	// pass3.uniforms.u_resolution.value.y = renderer.domElement.height
+	// pass3.uniforms.tDepth.value = target.depthTexture
+	// pass3.uniforms.tOriginal.value = targetOriginal.texture
+	// composer.addPass(pass3)
 
-	pass3 = new THREE.ShaderPass( THREE.DepthOfField )
+
+	pass3 = new THREE.ShaderPass( THREE.RadialBlur )
 	pass3.renderToScreen = true
 	pass3.uniforms.u_resolution.value.x = renderer.domElement.width
 	pass3.uniforms.u_resolution.value.y = renderer.domElement.height
-	pass3.uniforms.tDepth.value = target.depthTexture
-	pass3.uniforms.tOriginal.value = targetOriginal.texture
 	composer.addPass(pass3)
-
 
 	container = document.getElementById('jeu'); // REMPLACER PAR JQUERY
 	container.appendChild(renderer.domElement);

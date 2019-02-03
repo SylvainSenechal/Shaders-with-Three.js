@@ -37,16 +37,16 @@ THREE.DepthOfField = {
 
 		float readDepth( sampler2D depthSampler, vec2 coord ) {
 			float fragCoordZ = texture2D( depthSampler, coord ).x;
-			float viewZ = perspectiveDepthToViewZ( fragCoordZ, 1.0, 4000.0 );
-			return viewZToOrthographicDepth( viewZ, 1.0, 4000.0 );
+			float viewZ = perspectiveDepthToViewZ( fragCoordZ, 1.0, 20000.0 );
+			return viewZToOrthographicDepth( viewZ, 1.0, 20000.0 );
 		}
 
 		void main(){
 			float depth = readDepth( tDepth, vUv );
 			vec4 blurredColor = texture2D( tDiffuse, vUv );
 			vec4 initialColor = texture2D( tOriginal, vUv );
-			vec4 u = vec4(0.0, 0.0, 0.0, 1.0);
-			gl_FragColor = mix(blurredColor, initialColor, 1.0 - depth);
+			gl_FragColor = mix(initialColor, blurredColor, depth);
+			// gl_FragColor = vec4( vec3(depth), 1.0);
 		}
 		`
 	].join( "\n" )
